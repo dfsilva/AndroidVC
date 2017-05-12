@@ -1,0 +1,112 @@
+apply plugin: 'com.android.library'
+apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments "NDK_APPLICATION_MK:=jni/Application.mk", "APP_PLATFORM:=android-14"
+                abiFilters "armeabi-v7a", "x86", "armeabi"
+            }
+        }
+
+    }
+
+    sourceSets.main.jniLibs.srcDirs = ['./jni/']
+
+    externalNativeBuild {
+        ndkBuild {
+            path "jni/Android.mk"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            jniDebuggable true
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.googlecode.mp4parser:isoparser:1.0.6'
+    testCompile 'junit:junit:4.12'
+}
+
+
+
+String ossrhUsername = ""
+String ossrhPassword = ""
+
+if (project.rootProject.file('gradle.properties').exists()) {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('gradle.properties').newDataInputStream())
+    ossrhUsername = properties.getProperty("ossrhUsername", "")
+    ossrhPassword = properties.getProperty("ossrhPassword", "")
+    version = android.defaultConfig.versionName + "." + properties.getProperty("build_index", "")
+
+    nexusStaging {
+        username ossrhUsername
+        password ossrhPassword
+    }
+}
+
+project.afterEvaluate {
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+
+                    repository(url: "http://nexus.diegosilva.com.br:8081/nexus/content/repositories/snapshots/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    pom.project {
+                        name 'Actor SDK for Android'
+                        packaging 'aar'
+                        description 'Actor SDK: Embedding mobile messaging to Android App'
+                        url 'https://github.com/actorapp/actor-platform'
+
+                        scm {
+                            url 'scm:git@github.com:actorapp/actor-platform.git'
+                            connection 'scm:git@github.com:actorapp/actor-platform.git'
+                            developerConnection 'scm:git@github.com:actorapp/actor-platform.git'
+                        }
+
+                        licenses {
+                            license {
+                                name 'The MIT License (MIT)'
+                                url 'http://opensource.org/licenses/MIT'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'dfsilva'
+                                name 'Diego Silva'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+}
