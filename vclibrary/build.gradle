@@ -79,15 +79,15 @@ project.afterEvaluate {
                     }
 
                     pom.project {
-                        name 'Actor SDK for Android'
+                        name 'Video Compressor for Android'
                         packaging 'aar'
-                        description 'Actor SDK: Embedding mobile messaging to Android App'
-                        url 'https://github.com/actorapp/actor-platform'
+                        description 'Video Compressor for Android'
+                        url 'https://github.com/dfsilva/AndroidVC'
 
                         scm {
-                            url 'scm:git@github.com:actorapp/actor-platform.git'
-                            connection 'scm:git@github.com:actorapp/actor-platform.git'
-                            developerConnection 'scm:git@github.com:actorapp/actor-platform.git'
+                            url 'scm:git@github.com:dfsilva/AndroidVC.git'
+                            connection 'scm:git@github.com:dfsilva/AndroidVC.git'
+                            developerConnection 'scm:git@github.com:dfsilva/AndroidVC.git'
                         }
 
                         licenses {
