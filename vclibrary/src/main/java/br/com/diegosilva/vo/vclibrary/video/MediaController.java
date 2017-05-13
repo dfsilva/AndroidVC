@@ -224,7 +224,7 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    public boolean convertVideo(final String path, final String dirName, final String videosDir) {
+    public File convertVideo(final String path, final String dirName, final String videosDir) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
@@ -282,7 +282,7 @@ public class MediaController {
         File inputFile = new File(path);
         if (!inputFile.canRead()) {
             didWriteData(true, true);
-            return false;
+            return null;
         }
 
         videoConvertFirstWrite = true;
@@ -664,11 +664,10 @@ public class MediaController {
             }
         } else {
             didWriteData(true, true);
-            return false;
+            return null;
         }
         didWriteData(true, error);
-
-        inputFile.delete();
-        return true;
+        //inputFile.delete();
+        return cacheFile;
     }
 }

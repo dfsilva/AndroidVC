@@ -81,6 +81,7 @@ project.afterEvaluate {
                     pom.project {
                         name 'Video Compressor for Android'
                         packaging 'aar'
+                        groupId 'br.com.diegosilva'
                         description 'Video Compressor for Android'
                         url 'https://github.com/dfsilva/AndroidVC'
 

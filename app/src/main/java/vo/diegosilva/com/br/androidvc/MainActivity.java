@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
         new VideoCompressor().execute();
     }
 
-    class VideoCompressor extends AsyncTask<Void, Void, Boolean> {
+    class VideoCompressor extends AsyncTask<Void, Void, File> {
 
         @Override
         protected void onPreExecute() {
@@ -122,17 +122,17 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected File doInBackground(Void... voids) {
             return MediaController.getInstance().convertVideo(tempFile.getPath(),
                     Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME,
                     Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR);
         }
 
         @Override
-        protected void onPostExecute(Boolean compressed) {
+        protected void onPostExecute(File compressed) {
             super.onPostExecute(compressed);
             progressBar.setVisibility(View.GONE);
-            if(compressed){
+            if(compressed != null){
                 Log.d(TAG,"Compression successfully!");
             }
         }
