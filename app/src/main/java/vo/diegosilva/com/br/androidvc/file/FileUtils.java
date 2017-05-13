@@ -23,12 +23,11 @@ public class FileUtils {
     private static final String TAG = "FileUtils";
 
     public static void createApplicationFolder() {
-        File f = new File(Environment.getExternalStorageDirectory(), File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME);
+        File f = new File(Environment.getExternalStorageDirectory(), Config.VIDEOS_PATH);
         f.mkdirs();
-        f = new File(Environment.getExternalStorageDirectory(), File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME + Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR);
+        f = new File(Environment.getExternalStorageDirectory(), Config.VIDEOS_TEMP_PATH);
         f.mkdirs();
-        f = new File(Environment.getExternalStorageDirectory(), File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME + Config.VIDEO_COMPRESSOR_TEMP_DIR);
-        f.mkdirs();
+
     }
 
     public static File saveTempFile(String fileName, Context context, Uri uri) {
@@ -41,7 +40,7 @@ public class FileUtils {
         try {
             in = resolver.openInputStream(uri);
 
-            mFile = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME + Config.VIDEO_COMPRESSOR_TEMP_DIR, fileName);
+            mFile = new File(Environment.getExternalStorageDirectory().getPath() + Config.VIDEOS_TEMP_PATH, fileName);
             out = new FileOutputStream(mFile, false);
             byte[] buffer = new byte[1024];
             int read;

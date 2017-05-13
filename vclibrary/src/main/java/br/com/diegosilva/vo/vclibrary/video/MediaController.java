@@ -85,21 +85,21 @@ public class MediaController {
     public static class VideoConvertRunnable implements Runnable {
 
         private String videoPath;
-        private String dirName;
         private String videosDir;
+        private boolean removeOriginal;
 
-        private VideoConvertRunnable(String videoPath, String dirName,  String videosDir) {
+        private VideoConvertRunnable(String videoPath, String videosDir, boolean removeOriginal) {
             this.videoPath = videoPath;
-            this.dirName = dirName;
             this.videosDir = videosDir;
+            this.removeOriginal = removeOriginal;
         }
 
-        public static void runConversion(final String videoPath, final String dirName, final String videosDir) {
+        public static void runConversion(final String videoPath, final String videosDir, final boolean removeOriginal) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        VideoConvertRunnable wrapper = new VideoConvertRunnable(videoPath, dirName, videosDir);
+                        VideoConvertRunnable wrapper = new VideoConvertRunnable(videoPath, videosDir, removeOriginal);
                         Thread th = new Thread(wrapper, "VideoConvertRunnable");
                         th.start();
                         th.join();
@@ -112,7 +112,7 @@ public class MediaController {
 
         @Override
         public void run() {
-            MediaController.getInstance().convertVideo(videoPath, dirName, videosDir);
+            MediaController.getInstance().convertVideo(videoPath, videosDir, removeOriginal);
         }
     }
 
@@ -139,12 +139,12 @@ public class MediaController {
         return lastCodecInfo;
     }
 
-    public void scheduleVideoConvert(String path, String dirName, String videosDir) {
-        startVideoConvertFromQueue(path, dirName, videosDir);
+    public void scheduleVideoConvert(String path, String videosDir, boolean removeOriginal) {
+        startVideoConvertFromQueue(path, videosDir, removeOriginal);
     }
 
-    private void startVideoConvertFromQueue(String path, String dirName, String videosDir) {
-        VideoConvertRunnable.runConversion(path, dirName, videosDir);
+    private void startVideoConvertFromQueue(String path, String videosDir, boolean removeOriginal) {
+        VideoConvertRunnable.runConversion(path, videosDir, removeOriginal);
     }
 
     @TargetApi(16)
@@ -224,7 +224,7 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    public File convertVideo(final String path, final String dirName, final String videosDir) {
+    public File convertVideo(final String path, final String videosDir, boolean removeOriginal) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
@@ -245,11 +245,7 @@ public class MediaController {
         int bitrate = 450000;
         int rotateRender = 0;
 
-        File cacheFile = new File(
-                Environment.getExternalStorageDirectory()
-                        + File.separator
-                        + dirName
-                        + videosDir,
+        File cacheFile = new File(videosDir,
                 "VIDEO_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".mp4"
         );
 
@@ -667,7 +663,10 @@ public class MediaController {
             return null;
         }
         didWriteData(true, error);
-        //inputFile.delete();
+
+        if(removeOriginal)
+            inputFile.delete();
+
         return cacheFile;
     }
 }

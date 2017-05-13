@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
@@ -123,9 +124,15 @@ public class MainActivity extends Activity {
 
         @Override
         protected File doInBackground(Void... voids) {
+
+            File externalFile = Environment.getExternalStorageDirectory();
+            String externalPath = externalFile.getAbsolutePath();
+            String videosPath = externalPath + Config.VIDEOS_PATH;
+
+            new File(videosPath).mkdirs();
+
             return MediaController.getInstance().convertVideo(tempFile.getPath(),
-                    Config.VIDEO_COMPRESSOR_APPLICATION_DIR_NAME,
-                    Config.VIDEO_COMPRESSOR_COMPRESSED_VIDEOS_DIR);
+                    videosPath, true);
         }
 
         @Override
