@@ -20,6 +20,7 @@ import java.util.Locale;
 
 @SuppressLint("NewApi")
 public class MediaController {
+    private static final String TAG = MediaController.class.getName();
 
     public final static String MIME_TYPE = "video/avc";
     private final static int PROCESSOR_TYPE_OTHER = 0;
@@ -104,7 +105,7 @@ public class MediaController {
                         th.start();
                         th.join();
                     } catch (Exception e) {
-                        Log.e("tmessages", e.getMessage());
+                        Log.e(TAG, e.getMessage());
                     }
                 }
             }).start();
@@ -236,7 +237,7 @@ public class MediaController {
         long endTime = -1;
 
         int resultWidth = 640;
-        int resultHeight = 360;
+        int resultHeight = 480;
 
         int rotationValue = Integer.valueOf(rotation);
         int originalWidth = Integer.valueOf(width);
@@ -345,11 +346,11 @@ public class MediaController {
                                 } else if (codecName.equals("OMX.TI.DUCATI1.VIDEO.H264E")) {
                                     processorType = PROCESSOR_TYPE_TI;
                                 }
-                                Log.e("tmessages", "codec = " + codecInfo.getName() + " manufacturer = " + manufacturer + "device = " + Build.MODEL);
+                                Log.e(TAG, "codec = " + codecInfo.getName() + " manufacturer = " + manufacturer + "device = " + Build.MODEL);
                             } else {
                                 colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface;
                             }
-                            Log.e("tmessages", "colorFormat = " + colorFormat);
+                            Log.e(TAG, "colorFormat = " + colorFormat);
 
                             int resultHeightAligned = resultHeight;
                             int padding = 0;
@@ -537,7 +538,7 @@ public class MediaController {
 
                                         } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                                             MediaFormat newFormat = decoder.getOutputFormat();
-                                            Log.e("tmessages", "newFormat = " + newFormat);
+                                            Log.e(TAG, "newFormat = " + newFormat);
                                         } else if (decoderStatus < 0) {
                                             throw new RuntimeException("unexpected result from decoder.dequeueOutputBuffer: " + decoderStatus);
                                         } else {
@@ -556,7 +557,7 @@ public class MediaController {
                                             if (startTime > 0 && videoTime == -1) {
                                                 if (info.presentationTimeUs < startTime) {
                                                     doRender = false;
-                                                    Log.e("tmessages", "drop frame startTime = " + startTime + " present time = " + info.presentationTimeUs);
+                                                    Log.e(TAG, "drop frame startTime = " + startTime + " present time = " + info.presentationTimeUs);
                                                 } else {
                                                     videoTime = info.presentationTimeUs;
                                                 }
@@ -568,7 +569,7 @@ public class MediaController {
                                                     outputSurface.awaitNewImage();
                                                 } catch (Exception e) {
                                                     errorWait = true;
-                                                    Log.e("tmessages", e.getMessage());
+                                                    Log.e(TAG, e.getMessage());
                                                 }
                                                 if (!errorWait) {
                                                     if (Build.VERSION.SDK_INT >= 18) {
@@ -585,14 +586,14 @@ public class MediaController {
                                                             convertVideoFrame(rgbBuf, yuvBuf, colorFormat, resultWidth, resultHeight, padding, swapUV);
                                                             encoder.queueInputBuffer(inputBufIndex, 0, bufferSize, info.presentationTimeUs, 0);
                                                         } else {
-                                                            Log.e("tmessages", "input buffer not available");
+                                                            Log.e(TAG, "input buffer not available");
                                                         }
                                                     }
                                                 }
                                             }
                                             if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                                                 decoderOutputAvailable = false;
-                                                Log.e("tmessages", "decoder stream end");
+                                                Log.e(TAG, "decoder stream end");
                                                 if (Build.VERSION.SDK_INT >= 18) {
                                                     encoder.signalEndOfInputStream();
                                                 } else {
@@ -610,7 +611,7 @@ public class MediaController {
                                 videoStartTime = videoTime;
                             }
                         } catch (Exception e) {
-                            Log.e("tmessages", e.getMessage());
+                            Log.e(TAG, e.getMessage());
                             error = true;
                         }
 
@@ -642,7 +643,7 @@ public class MediaController {
                 }
             } catch (Exception e) {
                 error = true;
-                Log.e("tmessages", e.getMessage());
+                Log.e(TAG, e.getMessage());
             } finally {
                 if (extractor != null) {
                     extractor.release();
@@ -651,10 +652,10 @@ public class MediaController {
                     try {
                         mediaMuxer.finishMovie(false);
                     } catch (Exception e) {
-                        Log.e("tmessages", e.getMessage());
+                        Log.e(TAG, e.getMessage());
                     }
                 }
-                Log.e("tmessages", "time = " + (System.currentTimeMillis() - time));
+                Log.e(TAG, "time = " + (System.currentTimeMillis() - time));
             }
         } else {
             didWriteData(true, true);
