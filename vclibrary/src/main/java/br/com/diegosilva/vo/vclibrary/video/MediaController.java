@@ -224,7 +224,7 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    public File convertVideo(final String path, final String videosDir, boolean removeOriginal) {
+    public File convertVideo(final String path, final String resultFileName, boolean removeOriginal) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
@@ -245,9 +245,7 @@ public class MediaController {
         int bitrate = 450000;
         int rotateRender = 0;
 
-        File cacheFile = new File(videosDir,
-                "VIDEO_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".mp4"
-        );
+        File cacheFile = new File(resultFileName);
 
         if (Build.VERSION.SDK_INT < 18 && resultHeight > resultWidth && resultWidth != originalWidth && resultHeight != originalHeight) {
             int temp = resultHeight;
