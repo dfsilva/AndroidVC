@@ -9,14 +9,10 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 @SuppressLint("NewApi")
 public class MediaController {
@@ -83,40 +79,6 @@ public class MediaController {
         }
     }
 
-//    public static class VideoConvertRunnable implements Runnable {
-//
-//        private String videoPath;
-//        private String videosDir;
-//        private boolean removeOriginal;
-//
-//        private VideoConvertRunnable(String videoPath, String videosDir, boolean removeOriginal) {
-//            this.videoPath = videoPath;
-//            this.videosDir = videosDir;
-//            this.removeOriginal = removeOriginal;
-//        }
-//
-//        public static void runConversion(final String videoPath, final String videosDir, final boolean removeOriginal) {
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        VideoConvertRunnable wrapper = new VideoConvertRunnable(videoPath, videosDir, removeOriginal);
-//                        Thread th = new Thread(wrapper, "VideoConvertRunnable");
-//                        th.start();
-//                        th.join();
-//                    } catch (Exception e) {
-//                        Log.e(TAG, e.getMessage());
-//                    }
-//                }
-//            }).start();
-//        }
-//
-//        @Override
-//        public void run() {
-//            MediaController.getInstance().convertVideo(videoPath, videosDir, removeOriginal);
-//        }
-//    }
-
     public static MediaCodecInfo selectCodec(String mimeType) {
         int numCodecs = MediaCodecList.getCodecCount();
         MediaCodecInfo lastCodecInfo = null;
@@ -139,14 +101,6 @@ public class MediaController {
         }
         return lastCodecInfo;
     }
-
-//    public void scheduleVideoConvert(String path, String videosDir, boolean removeOriginal) {
-//        startVideoConvertFromQueue(path, videosDir, removeOriginal);
-//    }
-//
-//    private void startVideoConvertFromQueue(String path, String videosDir, boolean removeOriginal) {
-//        VideoConvertRunnable.runConversion(path, videosDir, removeOriginal);
-//    }
 
     @TargetApi(16)
     private long readAndWriteTrack(MediaExtractor extractor, MP4Builder mediaMuxer, MediaCodec.BufferInfo info, long start, long end, File file, boolean isAudio) throws Exception {
@@ -224,7 +178,7 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    public File convertVideo(final String path, final String resultFileName, boolean removeOriginal) {
+    public void convertVideo(final String path, final String resultFileName, ConversionListener listener) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(path);
@@ -276,7 +230,8 @@ public class MediaController {
         File inputFile = new File(path);
         if (!inputFile.canRead()) {
             didWriteData(true, true);
-            return null;
+            listener.onError(new RuntimeException("Canot read the input"));
+            return;
         }
 
         videoConvertFirstWrite = true;
@@ -464,6 +419,7 @@ public class MediaController {
                                 boolean decoderOutputAvailable = !decoderDone;
                                 boolean encoderOutputAvailable = true;
                                 while (decoderOutputAvailable || encoderOutputAvailable) {
+                                    listener.onProgress(0f);
                                     int encoderStatus = encoder.dequeueOutputBuffer(info, TIMEOUT_USEC);
                                     if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                                         encoderOutputAvailable = false;
@@ -591,6 +547,7 @@ public class MediaController {
                                                 }
                                             }
                                             if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                                                listener.onProgress(100f);
                                                 decoderOutputAvailable = false;
                                                 Log.e(TAG, "decoder stream end");
                                                 if (Build.VERSION.SDK_INT >= 18) {
@@ -658,13 +615,11 @@ public class MediaController {
             }
         } else {
             didWriteData(true, true);
-            return null;
+            listener.onError(new RuntimeException("Invalid sizes"));
+            return;
         }
         didWriteData(true, error);
 
-        if(removeOriginal)
-            inputFile.delete();
-
-        return cacheFile;
+        listener.onSuccess(cacheFile);
     }
 }

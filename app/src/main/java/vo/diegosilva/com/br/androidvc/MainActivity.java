@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import java.io.File;
 import java.util.Date;
 
+import br.com.diegosilva.vo.vclibrary.video.ConversionListener;
 import br.com.diegosilva.vo.vclibrary.video.MediaController;
 import vo.diegosilva.com.br.androidvc.file.FileUtils;
 
@@ -133,7 +134,22 @@ public class MainActivity extends Activity {
             new File(videosPath).mkdirs();
 
             return MediaController.getInstance().convertVideo(tempFile.getPath(),
-                    videosPath+"video_"+new Date().getTime()+".mp4", false);
+                    videosPath + "video_" + new Date().getTime() + ".mp4", new ConversionListener() {
+                        @Override
+                        public void onError(Exception ex) {
+
+                        }
+
+                        @Override
+                        public void onProgress(float progress) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(File compressedFile) {
+                            Log.d(TAG, "Sucesso na conversao");
+                        }
+                    });
         }
 
         @Override
