@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 
 
 import java.io.File;
+import java.util.Date;
 
 import br.com.diegosilva.vo.vclibrary.video.MediaController;
 import vo.diegosilva.com.br.androidvc.file.FileUtils;
@@ -132,7 +133,7 @@ public class MainActivity extends Activity {
             new File(videosPath).mkdirs();
 
             return MediaController.getInstance().convertVideo(tempFile.getPath(),
-                    videosPath, true);
+                    videosPath+"video_"+new Date().getTime()+".mp4", false);
         }
 
         @Override

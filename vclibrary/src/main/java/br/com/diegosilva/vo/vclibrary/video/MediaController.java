@@ -83,39 +83,39 @@ public class MediaController {
         }
     }
 
-    public static class VideoConvertRunnable implements Runnable {
-
-        private String videoPath;
-        private String videosDir;
-        private boolean removeOriginal;
-
-        private VideoConvertRunnable(String videoPath, String videosDir, boolean removeOriginal) {
-            this.videoPath = videoPath;
-            this.videosDir = videosDir;
-            this.removeOriginal = removeOriginal;
-        }
-
-        public static void runConversion(final String videoPath, final String videosDir, final boolean removeOriginal) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        VideoConvertRunnable wrapper = new VideoConvertRunnable(videoPath, videosDir, removeOriginal);
-                        Thread th = new Thread(wrapper, "VideoConvertRunnable");
-                        th.start();
-                        th.join();
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-                }
-            }).start();
-        }
-
-        @Override
-        public void run() {
-            MediaController.getInstance().convertVideo(videoPath, videosDir, removeOriginal);
-        }
-    }
+//    public static class VideoConvertRunnable implements Runnable {
+//
+//        private String videoPath;
+//        private String videosDir;
+//        private boolean removeOriginal;
+//
+//        private VideoConvertRunnable(String videoPath, String videosDir, boolean removeOriginal) {
+//            this.videoPath = videoPath;
+//            this.videosDir = videosDir;
+//            this.removeOriginal = removeOriginal;
+//        }
+//
+//        public static void runConversion(final String videoPath, final String videosDir, final boolean removeOriginal) {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        VideoConvertRunnable wrapper = new VideoConvertRunnable(videoPath, videosDir, removeOriginal);
+//                        Thread th = new Thread(wrapper, "VideoConvertRunnable");
+//                        th.start();
+//                        th.join();
+//                    } catch (Exception e) {
+//                        Log.e(TAG, e.getMessage());
+//                    }
+//                }
+//            }).start();
+//        }
+//
+//        @Override
+//        public void run() {
+//            MediaController.getInstance().convertVideo(videoPath, videosDir, removeOriginal);
+//        }
+//    }
 
     public static MediaCodecInfo selectCodec(String mimeType) {
         int numCodecs = MediaCodecList.getCodecCount();
@@ -140,13 +140,13 @@ public class MediaController {
         return lastCodecInfo;
     }
 
-    public void scheduleVideoConvert(String path, String videosDir, boolean removeOriginal) {
-        startVideoConvertFromQueue(path, videosDir, removeOriginal);
-    }
-
-    private void startVideoConvertFromQueue(String path, String videosDir, boolean removeOriginal) {
-        VideoConvertRunnable.runConversion(path, videosDir, removeOriginal);
-    }
+//    public void scheduleVideoConvert(String path, String videosDir, boolean removeOriginal) {
+//        startVideoConvertFromQueue(path, videosDir, removeOriginal);
+//    }
+//
+//    private void startVideoConvertFromQueue(String path, String videosDir, boolean removeOriginal) {
+//        VideoConvertRunnable.runConversion(path, videosDir, removeOriginal);
+//    }
 
     @TargetApi(16)
     private long readAndWriteTrack(MediaExtractor extractor, MP4Builder mediaMuxer, MediaCodec.BufferInfo info, long start, long end, File file, boolean isAudio) throws Exception {
@@ -166,7 +166,6 @@ public class MediaController {
             long startTime = -1;
 
             while (!inputDone) {
-
                 boolean eof = false;
                 int index = extractor.getSampleTrackIndex();
                 if (index == trackIndex) {
@@ -237,7 +236,7 @@ public class MediaController {
         long endTime = -1;
 
         int resultWidth = 640;
-        int resultHeight = 480;
+        int resultHeight = 360;
 
         int rotationValue = Integer.valueOf(rotation);
         int originalWidth = Integer.valueOf(width);
