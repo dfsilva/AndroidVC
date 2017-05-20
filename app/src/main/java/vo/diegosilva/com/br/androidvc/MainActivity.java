@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
         new VideoCompressor().execute();
     }
 
-    class VideoCompressor extends AsyncTask<Void, Void, File> {
+    class VideoCompressor extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected File doInBackground(Void... voids) {
+        protected Void doInBackground(Void... voids) {
 
             File externalFile = Environment.getExternalStorageDirectory();
             String externalPath = externalFile.getAbsolutePath();
@@ -133,7 +133,7 @@ public class MainActivity extends Activity {
 
             new File(videosPath).mkdirs();
 
-            return MediaController.getInstance().convertVideo(tempFile.getPath(),
+            MediaController.getInstance().convertVideo(tempFile.getPath(),
                     videosPath + "video_" + new Date().getTime() + ".mp4", new ConversionListener() {
                         @Override
                         public void onError(Exception ex) {
@@ -150,10 +150,11 @@ public class MainActivity extends Activity {
                             Log.d(TAG, "Sucesso na conversao");
                         }
                     });
+            return null;
         }
 
         @Override
-        protected void onPostExecute(File compressed) {
+        protected void onPostExecute(Void compressed) {
             super.onPostExecute(compressed);
             progressBar.setVisibility(View.GONE);
             if(compressed != null){
