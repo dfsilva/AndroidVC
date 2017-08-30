@@ -3,8 +3,8 @@ apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'maven'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
         minSdkVersion 15
@@ -46,7 +46,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-   // compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.googlecode.mp4parser:isoparser:1.0.6'
     testCompile 'junit:junit:4.12'
 }
